@@ -1,0 +1,15 @@
+---
+name: Get lastest tag version
+description: Get lastest tag version from github
+
+outputs:
+  latest-tag:
+    description: "Returns latest tag version"
+    value: ${{ steps.latest-tag.outputs.result }}
+runs:
+  using: "composite"
+  steps:
+    - name: "Get last 10 tags"
+      id: latest-tag
+      run: echo result=$(./.github/actions/get-tags/last-ten-tags.sh) >> "$GITHUB_OUTPUT"
+      shell: bash
