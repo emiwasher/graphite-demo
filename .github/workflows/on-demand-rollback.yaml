@@ -71,7 +71,7 @@ jobs:
           echo "Rolling back to version: ${{ inputs.tag }}"
 
       - name: Login to AWS ECR
-        if: ${{ input.tag != '' }}
+        if: ${{ inputs.tag != '' }}
         shell: bash
         run: |
           echo "aws ecr get-login-password --region eu-west-1 | docker login \
