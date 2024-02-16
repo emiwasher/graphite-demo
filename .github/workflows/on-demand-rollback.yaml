@@ -36,7 +36,6 @@ jobs:
       - name: List Previous Releases
         run: |
           echo '### List Revisions :eyes:' >> $GITHUB_STEP_SUMMARY
-#          REVISIONS=$(helm history $FRAGMENT --namespace=scm --max 5 --output=json)
           echo "| Release no. | Date | Release Notes |" >> $GITHUB_STEP_SUMMARY
           echo "| :---------  | ---- | ------------- |" >> $GITHUB_STEP_SUMMARY
           echo ${{ steps.tags.outputs.tags }} >> $GITHUB_STEP_SUMMARY
