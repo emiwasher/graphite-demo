@@ -39,9 +39,7 @@ jobs:
 #          REVISIONS=$(helm history $FRAGMENT --namespace=scm --max 5 --output=json)
           echo "| Release no. | Date | Release Notes |" >> $GITHUB_STEP_SUMMARY
           echo "| :---------  | ---- | ------------- |" >> $GITHUB_STEP_SUMMARY
-          echo ${{ steps.tags.outputs.tags }} |
-            jq -r '.[] | [.revision, (.updated | sub(".[^.]*$"; "Z") | fromdate | strftime("%D %T")), .status] | @tsv' |
-            awk -v FS="\t" '{printf "|%s|%s|%s|\n",$1,$2,$3,ORS}' >> $GITHUB_STEP_SUMMARY
+          echo ${{ steps.tags.outputs.tags }} >> $GITHUB_STEP_SUMMARY
 
   rollback:
     name: Claims management UI ${{ inputs.environment }} rollback
