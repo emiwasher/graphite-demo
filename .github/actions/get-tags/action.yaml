@@ -10,6 +10,6 @@ runs:
   using: "composite"
   steps:
     - name: "Get last 10 tags"
-      id: latest-tag
+      id: tags
       run: echo result=$(./.github/actions/get-tags/last-ten-tags.sh) >> "$GITHUB_OUTPUT"
       shell: bash
