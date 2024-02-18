@@ -1,10 +1,10 @@
 ---
-name: Get lastest tag version
-description: Get lastest tag version from github
+name: Get the last 10 release tags
+description: Get the last 10 release tags from github
 
 outputs:
   latest-tag:
-    description: "Returns latest tag version"
+    description: "Returns last 10 release tags"
     value: ${{ steps.latest-tag.outputs.result }}
 runs:
   using: "composite"
