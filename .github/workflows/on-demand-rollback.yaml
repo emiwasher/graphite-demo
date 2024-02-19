@@ -63,4 +63,4 @@ jobs:
           echo "Rolling back to version: ${{ inputs.tag }}"
 
       - name: Check valid tag
-        run: ./.github/actions/rollback-check-tag ${{ inputs.tag }}
+        run: ./.github/actions/rollback-check-tag/check-tag.sh ${{ inputs.tag }}
