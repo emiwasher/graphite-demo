@@ -1,0 +1,11 @@
+---
+name: Check Tag
+description: Check tag to match a regex
+
+runs:
+    using: 'composite'
+    steps:
+        - run: ./.github/actions/rollback-check-tag/check-tag.sh
+          shell: bash
+          env:
+              TAG: ${{ inputs.tag }}

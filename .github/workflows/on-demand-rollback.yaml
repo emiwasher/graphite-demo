@@ -44,73 +44,76 @@ jobs:
           echo "| :---------  | ---- | ------------- |" >> $GITHUB_STEP_SUMMARY
           echo ${{ steps.tags.outputs.tags }} >> $GITHUB_STEP_SUMMARY
 
-#  rollback:
-#    name: Claims management UI ${{ inputs.environment }} rollback
-#    if: inputs.action == 'Rollback'
-#    runs-on: [self-hosted, default]
-#    permissions:
-#      id-token: write
-#      contents: read
-#      actions: read
-#    timeout-minutes: 15
-#    steps:
-#      - name: Import Secrets From Vault Enterprise
-#        id: vault_secrets
-#        uses: hellofresh/jetstream-ci-scripts/actions/vault@master
-#        with:
-#          export-token: true
-#          namespace: services/claims-management-ui
-#          secrets: |
-#            common/key-value/data/slack SLACK_WEBHOOK | SLACK_URL ;
-#          shared-secrets: |
-#            common/data/defaults GITHUB_TOKEN | GITHUB_TOKEN ;
-#
-#      - name: Checkout Master
-#        uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Display rollback version tag
-#        run: |
-#          echo "Rolling back to version: ${{ inputs.tag }}"
-#
-#      - name: Login to AWS ECR
-#        if: ${{ inputs.tag != '' }}
-#        shell: bash
-#        run: |
-#          echo "aws ecr get-login-password --region eu-west-1 | docker login \
-#          --username AWS --password-stdin \
-#          https://489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}"
-#
-#      - name: Pull docker image from ECR
-#        if: ${{ inputs.tag != '' }}
-#        shell: bash
-#        run: |
-#          docker pull 489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}
-#
-#      - name: Create temp container
-#        if: ${{ inputs.tag != '' }}
-#        shell: bash
-#        run: |
-#          docker create --name temp-container \
-#          489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}
-#
-#      - name: Copy files from Docker container to local
-#        if: ${{ inputs.tag != '' }}
-#        shell: bash
-#        run: |
-#          docker cp temp-container:/app/out .
-#
-#      - name: Assume IAM role
-#        if: ${{ inputs.tag != '' }}
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#            aws-region: eu-west-1
-#            role-to-assume: arn:aws:iam::489198589229:role/github-actions-runner
-#            role-duration-seconds: 1200
-#            role-skip-session-tagging: true
-#
-#      - name: Upload to s3
-#        if: ${{ inputs.tag != '' }}
-#        shell: bash
-#        run: aws s3 cp out s3://claims-management-ui-storage-${{ github.event.inputs.environment }}/ --recursive
+  rollback:
+    name: Claims management UI ${{ inputs.environment }} rollback
+    runs-on: [self-hosted, default]
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
+    timeout-minutes: 15
+    steps:
+      - name: Display rollback version tag
+        run: |
+          echo "Rolling back to version: ${{ inputs.tag }}"
+
+      - name: Check valid tag
+        uses: ./.github/actions/rollback-check-tag
+
+      - name: Import Secrets From Vault Enterprise
+        id: vault_secrets
+        uses: hellofresh/jetstream-ci-scripts/actions/vault@master
+        with:
+          export-token: true
+          namespace: services/claims-management-ui
+          secrets: |
+            common/key-value/data/slack SLACK_WEBHOOK | SLACK_URL ;
+          shared-secrets: |
+            common/data/defaults GITHUB_TOKEN | GITHUB_TOKEN ;
+
+      - name: Checkout Master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: Login to AWS ECR
+        if: ${{ inputs.tag != '' }}
+        shell: bash
+        run: |
+          echo "aws ecr get-login-password --region eu-west-1 | docker login \
+          --username AWS --password-stdin \
+          https://489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}"
+
+      - name: Pull docker image from ECR
+        if: ${{ inputs.tag != '' }}
+        shell: bash
+        run: |
+          docker pull 489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}
+
+      - name: Create temp container
+        if: ${{ inputs.tag != '' }}
+        shell: bash
+        run: |
+          docker create --name temp-container \
+          489198589229.dkr.ecr.eu-west-1.amazonaws.com/claims-management-ui:${{ inputs.tag }}
+
+      - name: Copy files from Docker container to local
+        if: ${{ inputs.tag != '' }}
+        shell: bash
+        run: |
+          docker cp temp-container:/app/out .
+
+      - name: Assume IAM role
+        if: ${{ inputs.tag != '' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::489198589229:role/github-actions-runner
+          role-duration-seconds: 1200
+          role-skip-session-tagging: true
+
+      - name: Upload to s3
+        if: ${{ inputs.tag != '' }}
+        shell: bash
+        run: aws s3 cp out s3://claims-management-ui-storage-${{ inputs.environment }}/ --recursive
