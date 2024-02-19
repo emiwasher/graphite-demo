@@ -45,8 +45,8 @@ jobs:
           echo ${{ steps.tags.outputs.tags }} >> $GITHUB_STEP_SUMMARY
 
   rollback:
-    name: Claims management UI ${{ inputs.environment }} rollback
-    runs-on: [self-hosted, default]
+    name:  rollback
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
