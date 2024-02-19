@@ -53,6 +53,11 @@ jobs:
       actions: read
     timeout-minutes: 15
     steps:
+      - name: Checkout Master
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Display rollback version tag
         run: |
           echo "Rolling back to version: ${{ inputs.tag }}"
