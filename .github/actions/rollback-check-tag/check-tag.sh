@@ -6,7 +6,7 @@ REGEX='^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][
 echo "${1}"
 
 if ! (echo "${1}" | grep -i -E ${REGEX}); then
-	echo "Invalid Rollback Tag: \"${TAG}\". Valid tag should match semantic versioning"
+	echo "Invalid Rollback Tag: \"${1}\". Valid tag should match semantic versioning"
 	exit 1
 fi
 
